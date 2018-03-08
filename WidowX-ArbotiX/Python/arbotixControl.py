@@ -28,19 +28,19 @@ PKG_END = 0x21
 #---------------------------------------------------
 #FUNCTIONS
 def waitBytes(_serialHandler,_numBytes):
-		try:				
-			numWaiting = 0
-			while True:
-				if(_serialHandler.is_open):
-					numWaiting = _serialHandler.in_waiting					
-					if numWaiting < _numBytes:						
-						pass
-					else:
-						return True
-				else:					
-					return False								
-		except:			
-			return False
+	try:				
+		numWaiting = 0
+		while True:
+			if(_serialHandler.is_open):
+				numWaiting = _serialHandler.in_waiting					
+				if numWaiting < _numBytes:						
+					pass
+				else:
+					return True
+			else:					
+				return False								
+	except:			
+		return False
 #---------------------------------------------------
 def waitSTByte(_serialHandler,_startByte):	
 	receivedByte = 0
@@ -56,33 +56,36 @@ def waitSTByte(_serialHandler,_startByte):
 			return False
 #---------------------------------------------------
 def readPackage(_serialHandler):
-		#print 'readPackage called'
-		try:			
-			ret = waitSTByte(serialRobot,PKG_HEADER)
-			if ret:
-				ret = waitBytes(serialRobot,3)
-				if ret:					
-					data = _serialHandler.read(3)					
-					data = map(ord,data)				
+	#print 'readPackage called'
+	try:			
+		ret = waitSTByte(serialRobot,PKG_HEADER)
+		if ret:
+			ret = waitBytes(serialRobot,3)
+			if ret:					
+				data = _serialHandler.read(3)					
+				data = map(ord,data)				
 
-				ret = waitBytes(serialRobot,1)								
-				if ret:					
-					endByte = ord(_serialHandler.read())					
-					if endByte == PKG_END:						
-						return data
-					else:
-						print('package error!')
-						return False
-		except:			
-			print 'read error!'
-			return False
+			ret = waitBytes(serialRobot,1)								
+			if ret:					
+				endByte = ord(_serialHandler.read())					
+				if endByte == PKG_END:						
+					return data
+				else:
+					print('package error!')
+					return False
+	except:			
+		print 'read error!'
+		return False
 #---------------------------------------------------
 #---------------------------------------------------
 #MAIN
 #---------------------------------------------------
 #serial communication parameters
 serialRobot = Serial() #new object
-serialRobot.port = '/dev/ttyUSB0' #Port number or ID
+#Linux
+#serialRobot.port = '/dev/ttyUSB0' #Port number or ID
+#Windows
+serialRobot.port = 'COM3' #Port number or ID
 serialRobot.baud = 9600 #baud rate
 #---------------------------------------------------
 #opens the serial port
