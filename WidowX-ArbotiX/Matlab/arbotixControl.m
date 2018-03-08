@@ -40,8 +40,8 @@ fwrite(serialRobot,33); %end of package
 fwrite(serialRobot,36); %header
 fwrite(serialRobot,0); %action
 fwrite(serialRobot,6); %servo
-fwrite(serialRobot,2); %position MSB
-fwrite(serialRobot,0); %position LSB
+fwrite(serialRobot,0); %position MSB
+fwrite(serialRobot,40); %position LSB
 fwrite(serialRobot,33); %end of package
 
 fwrite(serialRobot,36); %header
