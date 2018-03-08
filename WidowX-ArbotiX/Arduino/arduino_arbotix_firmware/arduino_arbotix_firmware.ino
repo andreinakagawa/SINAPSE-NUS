@@ -6,7 +6,19 @@
  * Author: Andrei Nakagawa-Silva
  * Contact: nakagawa.andrei@gmail.com
  * URL: www.sinapseinstitute.org
- * Last update: 07/03/2018
+ * Last update: 08/03/2018
+ *---------------------------------------------------
+ * IMPORTANT:
+ * This program should be uploaded to the WidowX robot
+ * using Arduino IDE version 1.0.6. The ArbotiX libraries
+ * should be proper installed in the Arduino folder. Also,
+ * in the Arduino IDE it is necessary to select ArbotiX
+ * in Tools -> Board.
+ * According to the documentation, seen in March, 2018,
+ * ArbotiX is not working for newer versions of the 
+ * Arduino IDE.
+ * More details in:
+ *  learn.trossenrobotics.com/arbotix/arbotix-getting-started/
  *---------------------------------------------------
  * Description: This arduino sketch should be uploaded
  * to a WidowX robot (ArbotiX platform) so the robot
@@ -93,27 +105,35 @@ void loop()
         //Serial.println(String(inPackage[2]) + " " + String(fullPos));
         SetPosition(inPackage[PKG_INSERVO],fullPos);
         break;
-        
+     
+     //Returns the position (0 - 1023) of the chosen servo
      case AX_GETPOSITION:
+       //gets the servo id
        servoId = inPackage[PKG_INSERVO];
+       //gets the servo position
        pos = GetPosition(servoId);
-
+       //MSB of the postion
        posMSB = (pos>>8);
+       //LSB of the position
        posLSB = pos&0xFF;
-       Serial.write(ST);
-       Serial.write(servoId);
-       Serial.write(posMSB);
-       Serial.write(posLSB);
-       Serial.write(ET);
-       digitalWrite(AX_LED,HIGH);
+       //Writes an output package containing
+       //the servo id and its position divided
+       //into MSB and LSB bytes
+       Serial.write(ST); //header
+       Serial.write(servoId); //servo id
+       Serial.write(posMSB);//MSB position
+       Serial.write(posLSB); //LSB position
+       Serial.write(ET); //End of package
        break;
-       
+     
+     //Turn the LED on
      case AX_LED_ON:
-       digitalWrite(AX_LED,HIGH);
+       digitalWrite(AX_LED,HIGH); //high level at Pin 0
        break;
        
+     //Turn the LED off
      case AX_LED_OFF:
-       digitalWrite(AX_LED,LOW);
+       digitalWrite(AX_LED,LOW); //low level at Pin 0
        break;
     }
   }
