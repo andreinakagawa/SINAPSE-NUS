@@ -1,2 +1,2 @@
 # SINAPSE-NUS
-Research projects in SINAPSE-NUS, Singapore
+Folder containing research-related projects at SINAPSE-NUS, Singapore
