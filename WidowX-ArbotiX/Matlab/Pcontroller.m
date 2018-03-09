@@ -16,7 +16,7 @@
 % the new position to WidowX via serial as well.
 % The sampling frequency of the Arduino Uno was set to 100 Hz. The code
 % is available in this repository as well in the folder:
-% "Arduino/proportional_controller".
+% "Arduino/proportional_force_controller".
 % The sampling frequency of the ADC determines the speed of the controller
 %--------------------------------------------------------------------------
 % Hint: If an error occurs and it is not possible to open communication
