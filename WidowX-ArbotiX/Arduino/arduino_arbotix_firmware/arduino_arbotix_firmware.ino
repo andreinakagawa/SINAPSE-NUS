@@ -42,6 +42,8 @@
  * - Should implement a handshake routine to avoid
  * communication errors and possible delay in the first
  * commands that are sent to ArbotiX
+ * - Handle exceptions such as servo Id out of range,
+ * position out of range (should be between 0-1023).
  *---------------------------------------------------
 */
 //---------------------------------------------------
@@ -50,7 +52,7 @@
 #include <ax12.h>
 //---------------------------------------------------
 //DEFINES
-#define baud 9600 //baudrate
+#define baud 38400 //baudrate
 #define AX_LED 0 //LED pin id: LED can be used to check something
 #define AX_SETPOSITION 0 //Action = Set servo position
 #define AX_GETPOSITION 1 //Action = Get servo position
