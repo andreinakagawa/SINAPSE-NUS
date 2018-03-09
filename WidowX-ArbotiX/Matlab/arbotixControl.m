@@ -14,7 +14,7 @@
 %--------------------------------------------------------------------------
 %Serial port definitions
 portName = 'COM3'; %port name
-baud = 9600; %baudrate
+baud = 38400; %baudrate
 %Object for handling serial communication
 serialRobot = serial(portName); 
 %Configures the baudrate
