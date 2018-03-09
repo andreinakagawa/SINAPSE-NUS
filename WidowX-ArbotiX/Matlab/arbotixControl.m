@@ -28,6 +28,7 @@ pause(2);
 
 %SET POSITION
 %write a package for setting a new position
+%controlling servo #6: gripper
 fwrite(serialRobot,36); %header
 fwrite(serialRobot,0); %action
 fwrite(serialRobot,6); %servo
@@ -37,18 +38,27 @@ fwrite(serialRobot,33); %end of package
 
 %SET POSITION
 %write a package for setting a new position
+%controlling servo #6: gripper
+pos = 512;
+posMSB = uint8(bitshift(pos,-8)); %equivalent to pos>>8
+posLSB = uint8(bitand(pos,255)); %equivalent to 0xFF
 fwrite(serialRobot,36); %header
 fwrite(serialRobot,0); %action
 fwrite(serialRobot,6); %servo
-fwrite(serialRobot,0); %position MSB
-fwrite(serialRobot,40); %position LSB
+fwrite(serialRobot,posMSB); %position MSB
+fwrite(serialRobot,posLSB); %position LSB
 fwrite(serialRobot,33); %end of package
 
+%write a package for setting a new position
+%Controlling servo #5
+pos = 512;
+posMSB = uint8(bitshift(pos,-8)); %equivalent to pos>>8
+posLSB = uint8(bitand(pos,255)); %equivalent to 0xFF
 fwrite(serialRobot,36); %header
 fwrite(serialRobot,0); %action
 fwrite(serialRobot,5); %servo
-fwrite(serialRobot,2); %position MSB
-fwrite(serialRobot,0); %position LSB
+fwrite(serialRobot,posMSB); %position MSB
+fwrite(serialRobot,posLSB); %position LSB
 fwrite(serialRobot,33); %end of package
 
 %waits for sending a new command
