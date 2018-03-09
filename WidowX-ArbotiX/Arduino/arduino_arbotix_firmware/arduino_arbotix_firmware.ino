@@ -27,13 +27,21 @@
  * Therefore, this sketch serves like a wrapper that
  * that allows other softwares to be implemented
  * at a higher level, using the low-level functions
- * contained in the libraries for Arduino
+ * contained in the libraries for Arduino. 
+ * Any device can send commands or receive data to/from
+ * ArbotiX via serial communication according to the
+ * protocol established here.
  *---------------------------------------------------
  * Details of the serial commnication protocol
  * Input packages format:
  * [header][which action][which servo][positionMSB][positionLSB][end]
  * Output packages format:
  * [header][which servo][positionMSB][positionLSB][end]
+ *---------------------------------------------------
+ * TO-DO LIST:
+ * - Should implement a handshake routine to avoid
+ * communication errors and possible delay in the first
+ * commands that are sent to ArbotiX
  *---------------------------------------------------
 */
 //---------------------------------------------------
@@ -188,11 +196,3 @@ uint8_t* receivePackage()
   else
     return NULL;
 }
-//---------------------------------------------------
-//current status (07/03/2018): just tested with
-//inputs coming from serial monitor (arduino ide)
-//and it worked. now, have to finish the other 
-//functions and then, discard the necessity of
-//working with ascii table, since data can be sent
-//as byte really
-//---------------------------------------------------
