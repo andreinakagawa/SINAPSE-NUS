@@ -6,7 +6,7 @@
  * Author: Andrei Nakagawa-Silva
  * Contact: nakagawa.andrei@gmail.com
  * URL: www.sinapseinstitute.org
- * Last update: 08/03/2018
+ * Last update: 12/03/2018
  *---------------------------------------------------
  * IMPORTANT:
  * This program should be uploaded to the WidowX robot
@@ -62,12 +62,15 @@
 #define AX_LED_OFF 5 //Action = Turns the LED off
 #define inPackageSize 6   //size (in bytes) of the input package
 #define outPackageSize 5  //size (in bytes) of the output package
-#define ST '$' //Header
-#define ET '!' //End of package
+#define PKG_ST '$' //Header
+#define PKG_ET '!' //End of package
 #define PKG_INACTION 1 //Position in the package that corresponds to action
 #define PKG_INSERVO 2 //Position in the package that corresponds to action
 #define PKG_INMSB 3 //Position in the incoming package that corresponds to the MSB byte
 #define PKG_INLSB 4 //Position in the incoming package that corresponds to the LSB byte
+#define HNDSHK_ACK1 120 //byte sent during handshake, first byte sent
+#define HNDSHK_ACK2 240  //byte that should be read to finish handshake
+#define HNDSHK_ACKOK 360 //last byte sent during handshake indicating that it was successful
 //---------------------------------------------------
 //GLOBAL VARIABLES
 uint8_t* inPackage;
@@ -85,6 +88,8 @@ void setup()
   Serial.begin(baud);  
   //LED pin as output
   pinMode(AX_LED, OUTPUT);
+  //LED pin turned off
+  digitalWrite(AX_LED, LOW);
   //Relax all servos
   for(int k=0; k<7; k++)
   {
@@ -129,11 +134,11 @@ void loop()
        //Writes an output package containing
        //the servo id and its position divided
        //into MSB and LSB bytes
-       Serial.write(ST); //header
+       Serial.write(PKG_ST); //header
        Serial.write(servoId); //servo id
        Serial.write(posMSB);//MSB position
        Serial.write(posLSB); //LSB position
-       Serial.write(ET); //End of package
+       Serial.write(PKG_ET); //End of package
        break;
      
      //Turn the LED on
@@ -163,9 +168,9 @@ uint8_t* receivePackage()
     //reads one byte from the serial buffer
     incByte = Serial.read();
     //if the byte corresponds to the header
-    if(incByte == ST)
+    if(incByte == PKG_ST)
     {
-      package[0] = ST;
+      package[0] = PKG_ST;
       
       //for debugging
       //Serial.println("READ THE HEADER!");
@@ -188,7 +193,7 @@ uint8_t* receivePackage()
   //Checks if the last byte corresponds to the end of the buffer
   //if it is, then the package can be validated
   //otherwise, it returns a NULL pointer
-  if(package[5] == ET)
+  if(package[5] == PKG_ET)
   {
     //for debugging purposes
     //Serial.println("PACKAGE OK!");  
@@ -197,4 +202,54 @@ uint8_t* receivePackage()
   }
   else
     return NULL;
+}
+uint8_t handshake()
+{
+  //During handshake, AX_LED is maintained in a high state to signal that handshake has not been completed
+  digitalWrite(AX_LED,HIGH);
+  while(true)
+  {
+    //ArbotiX sends a package
+   Serial.write(PKG_ST); //header
+   Serial.write(HNDSHK_ACK1); //handshake 1
+   Serial.write((uint8_t)0);//don't care
+   Serial.write((uint8_t)0); //don't care
+   Serial.write((uint8_t)0);//don't care
+   Serial.write(PKG_ET); //End of package
+    
+   delay(50); //waits for the package to be sent
+    
+   //ArbotiX receives a package
+   //tries to receive a package 5 times
+   uint8_t* inpckg;
+   for(int i=0; i<5; i++)
+   {
+     inpckg = receivePackage();
+     if(inpckg != NULL)
+       break;
+     else
+       delay(50); //waits 50ms to check if another package has arrived
+   }
+   
+   //If inpckg is NULL, then start the handshake again
+   if(inpckg == NULL)
+     continue;
+   
+   //If received package is ok, check for the ACK2 byte
+   //If ok, then send a final byte
+   if(inpckg[1] == HNDSHK_ACK2)
+   {
+     //ArbotiX send a final package   
+     Serial.write(PKG_ST); //header
+     Serial.write(HNDSHK_ACKOK); //handshake OK
+     Serial.write((uint8_t)0);//don't care
+     Serial.write((uint8_t)0); //don't care
+     Serial.write((uint8_t)0);//don't care
+     Serial.write(PKG_ET); //End of package
+     break; //finishes handshake 
+   }
+   else
+     continue; //otherwise, restart handshake   
+  }
+  digitalWrite(AX_LED,LOW); //LED is off meaning that handshake was ok
 }
