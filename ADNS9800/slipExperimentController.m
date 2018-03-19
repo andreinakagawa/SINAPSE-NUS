@@ -296,12 +296,24 @@ end
 fclose(s);
 %closes the serial port communication with the WidowX-ArbotiX
 fclose(serialArbotix);
+%time vector for the filtered signals
+filtTime = 1:length(fvx);
+filtTime = filtTime .* (1.0/(dt*windowSize));
 %--------------------------------------------------------------------------
 input('When ready, press ENTER to finish: ','s');
 %--------------------------------------------------------------------------
-%save data in a .mat file
+%save all data in a .mat file
 resp.time = time;
-resp.deltax = deltax;
-resp.deltay = deltay;
+resp.rawDeltax = deltax;
+resp.rawDeltay = deltay;
+resp.rawDistx = posx;
+resp.rawDisty = posy;
 resp.adcForce = adcForce;
+resp.filtTime = filtTime;
+resp.filtForce = filtForce;
+resp.filtVelx = fvx;
+resp.filtVely = fvy;
+resp.filtPosx = fpx;
+resp.filtPosy = fpy;
+resp.gripperPos = gripPos;
 save(['experimentControl_',filename],'-struct','resp');
