@@ -11,7 +11,7 @@
 % as desired.
 %--------------------------------------------------------------------------
 %Serial communication parameters
-serialRobot = serial('COM4','BaudRate',38400);
+serialRobot = serial('COM3','BaudRate',9600);
 fopen(serialRobot);
 %Pause before starting
 pause(6);
